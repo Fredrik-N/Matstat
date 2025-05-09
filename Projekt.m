@@ -309,4 +309,54 @@ gumbplot(luleamax_p2)
 grid on
 
 
+%%
+%Fråga 3. Har förvantade  ̊arliga maximala flödet i Vindel ̈alven respektive i Luleälven  ̈andrat sig mellan
+%perioderna? Vi vill ha både skattning av förändringen, konfidensintervall och test. Motivera
+%också om det verkar rimligt att anta att standardavvikelserna kan vara samma under båda period-
+%erna f̈ör respektive  ̈alv och varför det går att använda normalapproximation.
 
+n1 = length(luleamax_p1);
+n2 = length(luleamax_p2);
+
+x1 =( (n1-1) * s_lulea1^2 + (n2-1) * s_lulea2^2 ) / (n1 + n2 -2);
+s_p_lulea = sqrt(x)
+
+SE_lulea = s_p_lulea * sqrt(1/n1 + 1/n2);
+
+[h_f_l, p_f_l] = vartest2(luleamax_p1, luleamax_p2)
+
+% h_f = 0 -> variansen kan antas vara lika
+
+[h, p, ci, stats] = ttest2(luleamax_p1, luleamax_p2, 'Vartype', 'unequal')
+% h = 1 -> skillnaden är significant
+% 0 ligger inte inom ci, signifikant skillnad
+
+t_lulea = (m_lulea1 - m_lulea2)/SE_lulea
+df_lulea = n1 + n2 -2;
+p = 2 * (1-tcdf(abs(t_lulea), df_lulea))
+
+%%
+n3 = length(vindelmax_p1);
+n4 = length(vindelmax_p2);
+
+x2 =( (n3-1) * s_vindel1^2 + (n4-1) * s_vindel2^2 ) / (n3 + n4 -2);
+s_p_vinvdel = sqrt(x2);
+
+SE_vindel = s_p_vindel * sqrt(1/n1 + 1/n2);
+
+[h_f_v, p_f_v] = vartest2(vindelmax_p1, vindelmax_p2)
+
+[h, p, ci, stats] = ttest2(vindelmax_p1, vindelmax_p2, 'Vartype', 'unequal')
+% h = 0 -> skillnaden är inte significant, 0 ligger i intervallet -> ingen
+% tydlig skillnad
+
+
+%%
+%4. Lule ̈alvens avrinningsomr ̊ade  ̈ar dubbelt s ̊a stort som Vindel ̈alvens s ̊a man kan f ̈orv ̈anta sig att
+%h ̈oga fl ̈oden i Lule ̈alven  ̈ar ungef ̈ar dubbelt s ̊a h ̈oga som h ̈oga fl ̈oden i Vindel ̈alven. Vi definierar
+%”h ̈ogt fl ̈ode” som ett  ̊arsmaximum  ̈over 2000 m3/s i Lule ̈alven respektive  ̈over 1000 m3/s i Vin-
+%del ̈alven. Under perioden f ̈ore regleringen (–1939) var sannolikheten f ̈or ”h ̈ogt fl ̈ode” ungef ̈ar
+%30 % i b ̊ada  ̈alvarna.
+%Under hur m ̊anga av  ̊aren efter reglering (1980–) var det ”h ̈ogt fl ̈ode” i Lule ̈alven respektive
+%i Vindel ̈alven? Har det skett en signifikant minskning av sannolikheten f ̈or ”h ̈ogt fl ̈ode” i
+%Lule ̈alven? I Vindel ̈alven?
