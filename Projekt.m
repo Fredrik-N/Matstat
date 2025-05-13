@@ -1,3 +1,4 @@
+close all
 % Matematisk statistik Datorövning 2
 %% Läs in data
 vindelmax = readtable('vindelälven_årsmax.csv', 'VariableNamingRule', 'preserve')
@@ -40,48 +41,9 @@ EX_gumb = 804.96 + vpa(eulergamma())*204.37;
 DX_gumb = 204.37*pi/sqrt(6);
 fprintf("E(X) = %.2f; D(X) = %.2f\n", EX_gumb, DX_gumb)
 
-%% Normal och Gumbel
-x = linspace(0, max(vindelmax.maxflode));
-% weibull
-p_norm = normpdf(x, m, s);
-F_norm = normcdf(x, m, s);
-% Gumbel
-p_gumb = gumbpdf(x, a, b);
-F_gumb = gumbcdf(x, a, b);
-subplot(2, 2, 1)
-hold on
-
-histogram(vindelmax.maxflode, 'Normalization', 'pdf')
-plot(x, p_norm, 'r', 'Linewidth', 1)
-plot(x, p_gumb, 'b', 'Linewidth', 1)
-legend('norm', 'gumb');
-hold off
-subplot(2, 2, 2)
-hold on
-cdfplot(vindelmax.maxflode)
-plot(x, F_norm, 'r', 'Linewidth', 1)
-plot(x, F_gumb, 'b', 'Linewidth', 1)
-hold off
-subplot(2, 2, 3)
-probplot('normal', vindelmax.maxflode)
-grid on
-subplot(2, 2, 4)
-gumbplot(vindelmax.maxflode)
-grid on
-
-
-
-%Fråga 1:
-%Jämför grafiskt hur årsmaximum varierar under de olika perioderna för respektive  ̈
-%älv och presentera en  ̈oversiktstabell med antal observationer, medelvärde, 
-% standardavvikelse, minimum och maximum i de fyra fallen.
-
-%Period innan omkonstruktion: 1900-1939
-%Period efter omkonstruktion: 1980-2022
-%%
 %% subplottar
-p1=-(1911-1939);
-p2=-(1980-2022);
+p1=-(1911-1939) +1;
+p2=-(1980-2022) +1;
 vindelmax_p1=zeros(p1, 1);
 vindelmax_p2=zeros(p2, 1);
 
@@ -263,7 +225,7 @@ hold on
 histogram(luleamax_p1, 'Normalization', 'pdf')
 plot(x, p_norms, 'r', 'Linewidth', 1)
 plot(x, p_gumbs, 'b', 'Linewidth', 1)
-legend('norm', 'gumb');
+legend('Data', 'Norm', 'Gumb');
 hold off
 
 subplot(2, 2, 2)
@@ -321,32 +283,33 @@ n2 = length(luleamax_p2);
 x1 =( (n1-1) * s_lulea1^2 + (n2-1) * s_lulea2^2 ) / (n1 + n2 -2);
 s_p_lulea = sqrt(x1)
 
-SE_lulea = s_p_lulea * sqrt(1/n1 + 1/n2);
+SE_lulea = sqrt(1/n1 + 1/n2);
 
 [h_f_l, p_f_l] = vartest2(luleamax_p1, luleamax_p2)
 
-% h_f = 0 -> variansen kan antas vara lika
+%h_f = 0 -> variansen kan antas vara lika
 
 [h, p, ci, stats] = ttest2(luleamax_p1, luleamax_p2, 'Vartype', 'unequal')
-% h = 1 -> skillnaden är significant
-% 0 ligger inte inom ci, signifikant skillnad
+%h = 1 -> skillnaden är significant
+%0 ligger inte inom ci, signifikant skillnad
 
 t_lulea = (m_lulea1 - m_lulea2)/SE_lulea
-df_lulea = n1 + n2 -2;
+df_lulea = n1 + n2 -2
 p = 2 * (1-tcdf(abs(t_lulea), df_lulea))
+I = medelskillnad_lulea + 2.3733 * SE_lulea
 
 %%
-n3 = length(vindelmax_p1);
-n4 = length(vindelmax_p2);
-
-x2 =( (n3-1) * s_vindel1^2 + (n4-1) * s_vindel2^2 ) / (n3 + n4 -2);
-s_p_vindel = sqrt(x2);
-
-SE_vindel = s_p_vindel * sqrt(1/n1 + 1/n2);
-
-[h_f_v, p_f_v] = vartest2(vindelmax_p1, vindelmax_p2)
-
-[h, p, ci, stats] = ttest2(vindelmax_p1, vindelmax_p2, 'Vartype', 'unequal')
+% n3 = length(vindelmax_p1);
+% n4 = length(vindelmax_p2);
+% 
+% x2 =( (n3-1) * s_vindel1^2 + (n4-1) * s_vindel2^2 ) / (n3 + n4 -2);
+% s_p_vindel = sqrt(x2);
+% 
+% SE_vindel = s_p_vindel * sqrt(1/n1 + 1/n2);
+% 
+% [h_f_v, p_f_v] = vartest2(vindelmax_p1, vindelmax_p2)
+% 
+% [h, p, ci, stats] = ttest2(vindelmax_p1, vindelmax_p2, 'Vartype', 'unequal')
 % h = 0 -> skillnaden är inte significant, 0 ligger i intervallet -> ingen
 % tydlig skillnad
 
@@ -356,8 +319,8 @@ alpha = 0.05;
 [h, p, ci, stats] = ttest2(vindelmax_p1, vindelmax_p2, "Alpha",alpha, "Vartype","equal")
 medelskillnad_lulea = m_lulea1-m_lulea2
 medelskillnad_vindel = m_vindel1 - m_vindel2
-skattningar(m_vindel1, s_vindel1,10,100, 'alla')
-skattningar(m_vindel2, s_vindel2,10,100, 'alla')
+skattningar(m_vindel1, s_vindel1, 10, 100, 'alla')
+skattningar(m_vindel2, s_vindel2, 10 ,100, 'alla')
 skattningar(m_lulea1, s_lulea1,10,100, 'alla')
 skattningar(m_lulea2, s_lulea2,10,100, 'alla')
 %%
@@ -375,3 +338,6 @@ andel_lulea_efter = lulea_efter / p2
 
 vindel_efter = sum(vindelmax_p2 > 1000)
 andel_vindel_efter = vindel_efter / n2
+
+binocdf(43,12,0.2791)
+binocdf()
