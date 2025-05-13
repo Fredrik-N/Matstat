@@ -42,18 +42,16 @@ DX_gumb = 204.37*pi/sqrt(6);
 fprintf("E(X) = %.2f; D(X) = %.2f\n", EX_gumb, DX_gumb)
 
 %% subplottar
-p1=-(1911-1939) +1;
-p2=-(1980-2022) +1;
-vindelmax_p1=zeros(p1, 1);
-vindelmax_p2=zeros(p2, 1);
+vindelmax_p1=zeros(29, 1);
+vindelmax_p2=zeros(43, 1);
 
-for e = 1:p1
+for e = 1:29
 vindelmax_p1(e)=vindelmax.maxflode(e);
 end
 
 
 
-for e = 1:p2
+for e = 1:43
 vindelmax_p2(e)=vindelmax.maxflode(e+29);
 end
 
@@ -66,7 +64,7 @@ plot(vindelmax_p1)
 subplot(1, 2, 2)
 plot(vindelmax_p2)
 
-axis([p1 p2 0 2500])
+%axis([29 72 0 2500])
 
 
 
@@ -287,6 +285,10 @@ SE_lulea = sqrt(1/n1 + 1/n2);
 
 [h_f_l, p_f_l] = vartest2(luleamax_p1, luleamax_p2)
 
+%%
+f = ((s_lulea1^2 / n1 + s_lulea2^2 / n2)^2) / ( (s_lulea1^2/n1)^2 / (n1-1)   +  (s_lulea2^2/n2)^2 / (n2-1)   )
+
+%%
 %h_f = 0 -> variansen kan antas vara lika
 
 [h, p, ci, stats] = ttest2(luleamax_p1, luleamax_p2, 'Vartype', 'unequal')
@@ -315,14 +317,14 @@ I = medelskillnad_lulea + 2.3733 * SE_lulea
 
 %% 3.2
 alpha = 0.05;
-[h, p, ci, stats] = ttest2(luleamax_p1, luleamax_p2, "Alpha",alpha, "Vartype","equal")
-[h, p, ci, stats] = ttest2(vindelmax_p1, vindelmax_p2, "Alpha",alpha, "Vartype","equal")
-medelskillnad_lulea = m_lulea1-m_lulea2
-medelskillnad_vindel = m_vindel1 - m_vindel2
-skattningar(m_vindel1, s_vindel1, 10, 100, 'alla')
-skattningar(m_vindel2, s_vindel2, 10 ,100, 'alla')
-skattningar(m_lulea1, s_lulea1,10,100, 'alla')
-skattningar(m_lulea2, s_lulea2,10,100, 'alla')
+[h, p, ci, stats] = ttest2(luleamax_p2, luleamax_p1, "Vartype","unequal")
+[h, p, ci, stats] = ttest2(vindelmax_p2, vindelmax_p1, "Vartype","equal")
+medelskillnad_lulea = m_lulea2-m_lulea1
+medelskillnad_vindel = m_vindel2 - m_vindel1
+%skattningar(m_vindel1, s_vindel1, 10, 100, 'alla')
+%skattningar(m_vindel2, s_vindel2, 10 ,100, 'alla')
+%skattningar(m_lulea1, s_lulea1,10,100, 'alla')
+%skattningar(m_lulea2, s_lulea2,10,100, 'alla')
 %%
 %4. Lule ̈alvens avrinningsomr ̊ade  ̈ar dubbelt s ̊a stort som Vindel ̈alvens s ̊a man kan f ̈orv ̈anta sig att
 %h ̈oga fl ̈oden i Lule ̈alven  ̈ar ungef ̈ar dubbelt s ̊a h ̈oga som h ̈oga fl ̈oden i Vindel ̈alven. Vi definierar
@@ -333,11 +335,11 @@ skattningar(m_lulea2, s_lulea2,10,100, 'alla')
 %i Vindel ̈alven? Har det skett en signifikant minskning av sannolikheten f ̈or ”h ̈ogt fl ̈ode” i
 %Lule ̈alven? I Vindel ̈alven?
 
-lulea_efter = sum(luleamax_p2 > 2000)
+lulea_efter = sum(luleamax_p2 >= 2000)
 andel_lulea_efter = lulea_efter / p2
 
 vindel_efter = sum(vindelmax_p2 > 1000)
 andel_vindel_efter = vindel_efter / n2
 
-binocdf(43,12,0.2791)
-binocdf()
+binocdf(12,43,0.3)
+binocdf(1,43,0.3)
