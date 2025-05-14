@@ -64,7 +64,7 @@ plot(vindelmax_p1)
 subplot(1, 2, 2)
 plot(vindelmax_p2)
 
-%axis([29 72 0 2500])
+
 
 
 
@@ -109,7 +109,7 @@ vindel1max=max(vindelmax_p1)
 vindel2max=max(vindelmax_p2)
 lulea1max=max(luleamax_p1)
 lulea2max=max(luleamax_p2)
-%%
+
 vindel1min=min(vindelmax_p1)
 vindel2min=min(vindelmax_p2)
 lulea1min=min(luleamax_p1)
@@ -270,61 +270,39 @@ grid on
 
 
 %%
-%Fråga 3. Har förvantade  ̊arliga maximala flödet i Vindel ̈alven respektive i Luleälven  ̈andrat sig mellan
+% %Fråga 3. Har förvantade  ̊arliga maximala flödet i Vindel ̈alven respektive i Luleälven  ̈andrat sig mellan
 %perioderna? Vi vill ha både skattning av förändringen, konfidensintervall och test. Motivera
 %också om det verkar rimligt att anta att standardavvikelserna kan vara samma under båda period-
 %erna f̈ör respektive  ̈alv och varför det går att använda normalapproximation.
+medelskillnad_lulea = m_lulea2-m_lulea1
+medelskillnad_vindel = m_vindel2 - m_vindel1
 
 n1 = length(luleamax_p1);
 n2 = length(luleamax_p2);
+n3 = length(vindelmax_p1);
+n4 = length(vindelmax_p2);
 
-x1 =( (n1-1) * s_lulea1^2 + (n2-1) * s_lulea2^2 ) / (n1 + n2 -2);
-s_p_lulea = sqrt(x1)
+s_p_vindel = sqrt(( (n3-1) * s_vindel1^2 + (n4-1) * s_vindel2^2 ) / (n3 + n4 -2))
+d_vindel = s_p_vindel * sqrt(1/n3 + 1/n4);
+f_vindel = n3 + n4-2
 
-SE_lulea = sqrt(1/n1 + 1/n2);
+f_lule = ((s_lulea1^2 / n1 + s_lulea2^2 / n2)^2) / ( (s_lulea1^2/n1)^2 / (n1-1)   +  (s_lulea2^2/n2)^2 / (n2-1)   )
+d_lule = sqrt(s_lulea1^2/n1 + s_lulea2^2/n2)
 
-[h_f_l, p_f_l] = vartest2(luleamax_p1, luleamax_p2)
+alfa = 0.05/2;
+tkvantil_vindel = tinv(1-alfa, f_vindel)
+tkvantil_lule = tinv(1-alfa, f_lule)
 
-%%
-f = ((s_lulea1^2 / n1 + s_lulea2^2 / n2)^2) / ( (s_lulea1^2/n1)^2 / (n1-1)   +  (s_lulea2^2/n2)^2 / (n2-1)   )
+I_lagre_vindel = medelskillnad_vindel - tkvantil_vindel * d_vindel
+I_hogre_vindel = medelskillnad_vindel + tkvantil_vindel * d_vindel
 
-%%
-%h_f = 0 -> variansen kan antas vara lika
+I_lagre_lule = medelskillnad_lulea - tkvantil_lule * d_lule
+I_hogre_lule = medelskillnad_lulea + tkvantil_lule * d_lule
 
-[h, p, ci, stats] = ttest2(luleamax_p1, luleamax_p2, 'Vartype', 'unequal')
-%h = 1 -> skillnaden är significant
-%0 ligger inte inom ci, signifikant skillnad
 
-t_lulea = (m_lulea1 - m_lulea2)/SE_lulea
-df_lulea = n1 + n2 -2
-p = 2 * (1-tcdf(abs(t_lulea), df_lulea))
-I = medelskillnad_lulea + 2.3733 * SE_lulea
+[h, p, ci, stats] = ttest2(luleamax_p2, luleamax_p1, "Vartype","unequal");
+[h, p, ci, stats] = ttest2(vindelmax_p2, vindelmax_p1, "Vartype","equal");
 
-%%
-% n3 = length(vindelmax_p1);
-% n4 = length(vindelmax_p2);
-% 
-% x2 =( (n3-1) * s_vindel1^2 + (n4-1) * s_vindel2^2 ) / (n3 + n4 -2);
-% s_p_vindel = sqrt(x2);
-% 
-% SE_vindel = s_p_vindel * sqrt(1/n1 + 1/n2);
-% 
-% [h_f_v, p_f_v] = vartest2(vindelmax_p1, vindelmax_p2)
-% 
-% [h, p, ci, stats] = ttest2(vindelmax_p1, vindelmax_p2, 'Vartype', 'unequal')
-% h = 0 -> skillnaden är inte significant, 0 ligger i intervallet -> ingen
-% tydlig skillnad
-
-%% 3.2
-alpha = 0.05;
-[h, p, ci, stats] = ttest2(luleamax_p2, luleamax_p1, "Vartype","unequal")
-[h, p, ci, stats] = ttest2(vindelmax_p2, vindelmax_p1, "Vartype","equal")
-medelskillnad_lulea = m_lulea2-m_lulea1
-medelskillnad_vindel = m_vindel2 - m_vindel1
-%skattningar(m_vindel1, s_vindel1, 10, 100, 'alla')
-%skattningar(m_vindel2, s_vindel2, 10 ,100, 'alla')
-%skattningar(m_lulea1, s_lulea1,10,100, 'alla')
-%skattningar(m_lulea2, s_lulea2,10,100, 'alla')
 %%
 %4. Lule ̈alvens avrinningsomr ̊ade  ̈ar dubbelt s ̊a stort som Vindel ̈alvens s ̊a man kan f ̈orv ̈anta sig att
 %h ̈oga fl ̈oden i Lule ̈alven  ̈ar ungef ̈ar dubbelt s ̊a h ̈oga som h ̈oga fl ̈oden i Vindel ̈alven. Vi definierar
